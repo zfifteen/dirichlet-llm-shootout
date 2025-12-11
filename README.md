@@ -1,34 +1,48 @@
-# dirichlet-llm-shootout
+# Dirichlet's Theorem on Primes in Arithmetic Progressions
 
-LLM shootout: Grok, Claude, and GPT turn a Dirichlet's theorem slide into a reproducible code-and-plots experiment.
+## Introduction
 
-## Idea
+Dirichlet's theorem on arithmetic progressions is a fundamental result in number theory, stating that for any two positive coprime integers \(a\) and \(d\), there are infinitely many prime numbers of the form \(n = a + kd\) where \(k\) is a non-negative integer. This theorem, proved by Peter Gustav Lejeune Dirichlet in 1837, extends the notion of primes being "randomly" distributed while respecting modular constraints.
 
-Given a single slide stating Dirichlet's theorem on primes in arithmetic progressions, each model must:
-- Explain the theorem to a non-specialist technical audience.
-- Design numerical experiments (primes in residue classes).
-- Produce Python code and plots suitable for a GitHub Gist.
+The theorem implies not only infinitude but also a natural density among all primes. Specifically, the proportion of primes congruent to \(a \pmod{d}\) is \(\frac{1}{\phi(d)}\), where \(\phi\) is Euler's totient function. This computational illustration demonstrates the theorem empirically by generating primes and analyzing their distribution across residue classes modulo various \(N\).
 
-## Repo layout
+## Formal Statement
 
-- `meta/` – experiment design, task spec, and canonical prompts.
-- `runs/` – raw outputs from each model (`grok/`, `claude/`, `gpt/`).
-- `scripts/` – shared prime/plot utilities used in analysis.
-- `analysis/` – evaluation rubric, scoring notebooks, comparison scripts.
-- `results/` – final plots and summary tables.
+**Theorem**: Let \(a\) and \(d > 0\) be coprime integers (i.e., \(\gcd(a, d) = 1\)). Then there are infinitely many primes \(p\) such that \(p \equiv a \pmod{d}\).
 
-## Getting started
+Moreover, the natural density of such primes among all primes is \(\frac{1}{\phi(d)}\), where \(\phi(d) = |\{ k : 1 \leq k \leq d, \gcd(k, d) = 1 \}|\) is Euler's totient function, counting the number of integers up to \(d\) that are coprime to \(d\).
 
-1. Clone the repo and create a Python env.
-2. Run `pip install -r requirements.txt` (to be added).
-3. Use `scripts/primes_modN.py` to regenerate baseline experiments.
-4. Drop each model's code into `runs/<model>/candidate-gist/` and execute.
-5. Use evaluation scripts in `analysis/` to score and compare outputs.
+## Euler's Totient Function \(\phi(N)\)
 
-## Source material
+The totient function \(\phi(N)\) measures the size of the multiplicative group modulo \(N\). For example:
+- \(\phi(3) = 2\) (1, 2 coprime to 3)
+- \(\phi(4) = 2\) (1, 3)
+- \(\phi(5) = 4\) (1,2,3,4)
+- \(\phi(12) = 4\) (1,5,7,11)
 
-This experiment is inspired by 3Blue1Brown's video "Why do prime numbers make these spirals?" ([YouTube link](https://youtu.be/EK32jo7i5LQ?si=j6vIH12Enb2dPXtt), timestamp ~18:30-22:00), which presents Dirichlet's theorem in the context of prime spirals. This repo conducts an independent computational experiment to illustrate the theorem.
+It is multiplicative: if \(\gcd(m,n)=1\), then \(\phi(mn) = \phi(m)\phi(n)\).
 
-## License
+## Computational Experiment Methodology
 
-MIT
+We use the Sieve of Eratosthenes to generate all primes up to a large limit (e.g., 100,000). These primes are then partitioned into residue classes modulo \(N\). For each residue class \(r\) coprime to \(N\), we compute the empirical density as the proportion of primes congruent to \(r \pmod{N}\).
+
+Convergence plots show how these densities approach the theoretical value \(\frac{1}{\phi(N)}\) as the limit increases. A comparison for \(N=12\) and a heatmap across multiple \(N\) provide further insights. All visualizations are generated using Matplotlib.
+
+## Instructions to Run
+
+1. Ensure Python 3.9+ is installed.
+2. Install dependencies: `pip install -r requirements.txt`
+3. Run the visualization script: `python visualizations.py`
+4. View the generated PNG files and refer to this README for interpretation.
+
+## Interpreting the Results
+
+The convergence plots (e.g., `convergence_N3.png`) illustrate how empirical densities stabilize towards \(\frac{1}{\phi(N)}\) with increasing prime limits, providing visual evidence of Dirichlet's theorem. Oscillations decrease as more primes are included, confirming the equidistribution.
+
+For \(N=12\), the bar chart `comparison_N12.png` shows empirical densities close to 0.25 for residues 1,5,7,11, matching theory.
+
+The heatmap `heatmap_multiple_N.png` reveals patterns across moduli, with brighter cells indicating higher prime densities in coprime classes.
+
+The creative visualization `creative_visualization.png` plots primes in a specific progression to highlight their infinitude empirically.
+
+This experiment underscores the theorem's predictive power, even for modest computational scales.
